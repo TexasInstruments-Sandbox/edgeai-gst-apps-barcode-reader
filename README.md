@@ -13,6 +13,13 @@ This demo runs a custom trained YOLOX-nano neural network[^1] on the **[AM62A](h
 
 See [Resources](#resources) for links to AM62A and other Edge AI training material.
 
+
+## Supported Devices
+
+| **DEVICE**              | **Supported**      |
+| :---:                   | :---:              |
+| AM62A                   | :heavy_check_mark: |
+
 ### Setup
 
 Follow the [AM62A Quick Start guide](https://dev.ti.com/tirex/explore/node?node=A__AQniYj7pI2aoPAFMxWtKDQ__am62ax-devtools__FUz-xrs__LATEST) for the [AM62A Starter Kit](https://www.ti.com/tool/SK-AM62A-LP)

@@ -34,6 +34,7 @@ import yaml
 
 from edge_ai_class import EdgeAIDemo
 import utils
+import websockets
 
 
 def main(sys_argv):
@@ -43,6 +44,7 @@ def main(sys_argv):
         config = yaml.safe_load(f)
 
     try:
+        websockets.launch_server_process()
         demo = EdgeAIDemo(config)
         demo.start()
 

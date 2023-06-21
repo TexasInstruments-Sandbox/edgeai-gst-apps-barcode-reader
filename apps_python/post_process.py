@@ -204,7 +204,7 @@ class PostProcessDetection(PostProcess):
             bbox[..., (0, 2)] /= self.model.resize[0]
             bbox[..., (1, 3)] /= self.model.resize[1]
 
-
+        decoded_text = []
         for i,b in enumerate(bbox):
             if b[5] > self.model.viz_threshold:
                 img_copy = img.copy()
@@ -225,6 +225,7 @@ class PostProcessDetection(PostProcess):
                 subimg = img_copy[box[1]:box[3],box[0]:box[2]]
                 text = self.scan_codes(subimg)
                 if len(text) > 0:
+                    decoded_text.extend(text)
                     write_text = text[0] if len(text[0]) < 20 else text[0][:20]+'...'
                     # print(write_text)
                     cv2.putText(
@@ -240,7 +241,7 @@ class PostProcessDetection(PostProcess):
             self.debug.log(self.debug_str)
             self.debug_str = ""
 
-        return img
+        return img, decoded_text
     
     def scan_codes(self, img):
 

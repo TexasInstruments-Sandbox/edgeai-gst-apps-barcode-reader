@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Barcode Reader</title>
+    <script src="{{url_for('static', filename='./socket.io.js')}}"></script>
+</head>
+<body>
+    <h1>Basic Barcode Reader Frontend</h1>
+    <div id="messages">
+        <p className="element", id="current-barcode">Most recent barcode value goes here!</p>
+    </div>
+    <script type="text/javascript">
+        //const { io } = require("socket.io-client");
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        socket.on('connect', function() {
+            console.log('Connected to server via WebSocket');
+        });
+
+        socket.on('disconnect', function() {
+            console.log('Disconnected from server');
+        });
+
+        socket.on('barcode', function(message) {
+            console.log('Received message: ' + message)
+            var messageElement = document.getElementById('current-barcode');
+            messageElement.innerHTML = message;
+            // document.getElementById('messages').appendChild(messageElement);
+        });
+
+    </script>
+</body>
+</html>
+

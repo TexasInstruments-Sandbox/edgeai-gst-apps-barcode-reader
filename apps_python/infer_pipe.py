@@ -34,6 +34,7 @@ import threading
 import utils
 import debug
 from post_process import PostProcess
+import websockets
 
 class InferPipe:
     """
@@ -95,6 +96,9 @@ class InferPipe:
         """
         Callback function for pipeline thread
         """
+
+        sock = websockets.setup_client_socket()
+
         while self.stop_thread == False:
             # capture and pre-process
             t_pre_pull = time()
@@ -111,6 +115,7 @@ class InferPipe:
             frame = self.gst_pipe.pull_frame(self.gst_sen_inp, self.sub_flow.input.loop)
             if type(frame) == type(None):
                 break
+            print('pulled frames')
             t_post_pull = time()
 
             if self.pre_proc_debug:
@@ -128,10 +133,14 @@ class InferPipe:
 
             # post-process
             t1=time()
-            out_frame = self.post_proc(frame, result)
+            out_frame, decoded_text = self.post_proc(frame, result)
             t2=time()
             self.gst_pipe.push_frame(out_frame, self.gst_post_out)
             t_push = time()
+
+            if len(decoded_text) > 0:
+                print('sending data: ' + decoded_text[0])
+                sock.emit('new-barcode',{'data':decoded_text[0]} )
 
             # Increment frame count and print timing info
             if self.infer_debug:

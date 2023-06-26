@@ -5,9 +5,9 @@ if [  -f barcode-modelartifacts.tar.gz ] ; then
 else 
     wget https://software-dl.ti.com/jacinto7/esd/edgeai-marketplace/barcode-reader/barcode-modelartifacts.tar.gz
     if [ "$?" -ne "0" ]; then
-        unset HTTPS_PROXY HTTP_PROXY https_proxy http_proxy
+        wget https://software-dl.ti.com/jacinto7/esd/edgeai-marketplace/barcode-reader/barcode-modelartifacts.tar.gz --proxy off
+
         if [ "$?" -ne "0" ]; then
-        wget https://software-dl.ti.com/jacinto7/esd/edgeai-marketplace/barcode-reader/barcode-modelartifacts.tar.gz
             echo "Failed to download model; check proxy settings/environment variables. Alternatively, download the model on a PC and transfer to this directory"
         fi
     fi

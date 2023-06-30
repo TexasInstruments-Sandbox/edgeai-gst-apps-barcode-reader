@@ -89,6 +89,11 @@ class PostProcess:
         """
         Create a object of a subclass based on the task type
         """
+        if 'barcode' in flow.model.model_name:
+            return PostProcessBarcode(flow)
+        elif 'retail' in flow.model.model_name:
+            return PostProcessRetail(flow)
+
         if flow.model.task_type == "classification":
             return PostProcessClassification(flow)
         elif flow.model.task_type == "detection":
@@ -161,9 +166,10 @@ class PostProcessClassification(PostProcess):
         return frame
 
 
-class PostProcessDetection(PostProcess):
+class PostProcessBarcode(PostProcess):
     def __init__(self, flow):
         super().__init__(flow)
+        print('Setup barcode postprocessing')
         self.zbar_scanner = zbar.ImageScanner()
         self.zbar_scanner.parse_config('enable')
 
@@ -289,6 +295,197 @@ class PostProcessDetection(PostProcess):
 
         return frame
 
+class PostProcessRetail(PostProcess):
+    def __init__(self, flow):
+        super().__init__(flow)
+        print('Setup retail postprocessing')
+
+
+    def __call__(self, img, results):
+        """
+        Post process function for detection
+        Args:
+            img: Input frame
+            results: output of inference
+        """
+        for i, r in enumerate(results):
+            r = np.squeeze(r)
+            if r.ndim == 1:
+                r = np.expand_dims(r, 1)
+            results[i] = r
+
+        if self.model.shuffle_indices:
+            results_reordered = []
+            for i in self.model.shuffle_indices:
+                results_reordered.append(results[i])
+            results = results_reordered
+
+        if results[-1].ndim < 2:
+            results = results[:-1]
+
+        bbox = np.concatenate(results, axis=-1)
+
+        if self.model.formatter:
+            if self.model.ignore_index == None:
+                bbox_copy = copy.deepcopy(bbox)
+            else:
+                bbox_copy = copy.deepcopy(np.delete(bbox, self.model.ignore_index, 1))
+            bbox[..., self.model.formatter["dst_indices"]] = bbox_copy[
+                ..., self.model.formatter["src_indices"]
+            ]
+
+        if not self.model.normalized_detections:
+            bbox[..., (0, 2)] /= self.model.resize[0]
+            bbox[..., (1, 3)] /= self.model.resize[1]
+
+        for b in bbox:
+            if b[5] > self.model.viz_threshold:
+                if type(self.model.label_offset) == dict:
+                    class_name = self.model.classnames[self.model.label_offset[int(b[4])]]
+                else:
+                    class_name = self.model.classnames[self.model.label_offset + int(b[4])]
+                img = self.overlay_bounding_box(img, b, class_name)
+
+        if self.debug:
+            self.debug.log(self.debug_str)
+            self.debug_str = ""
+
+        return img
+
+    def overlay_bounding_box(self, frame, box, class_name):
+        """
+        draw bounding box at given co-ordinates.
+
+        Args:
+            frame (numpy array): Input image where the overlay should be drawn
+            bbox : Bounding box co-ordinates in format [X1 Y1 X2 Y2]
+            class_name : Name of the class to overlay
+        """
+        box = [
+            int(box[0] * frame.shape[1]),
+            int(box[1] * frame.shape[0]),
+            int(box[2] * frame.shape[1]),
+            int(box[3] * frame.shape[0]),
+        ]
+        box_color = (20, 220, 20)
+        text_color = (0, 0, 0)
+        cv2.rectangle(frame, (box[0], box[1]), (box[2], box[3]), box_color, 2)
+        cv2.rectangle(
+            frame,
+            (int((box[2] + box[0]) / 2) - 5, int((box[3] + box[1]) / 2) + 5),
+            (int((box[2] + box[0]) / 2) + 160, int((box[3] + box[1]) / 2) - 15),
+            box_color,
+            -1,
+        )
+        cv2.putText(
+            frame,
+            class_name,
+            (int((box[2] + box[0]) / 2), int((box[3] + box[1]) / 2)),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.5,
+            text_color,
+        )
+
+        if self.debug:
+            self.debug_str += class_name
+            self.debug_str += str(box) + "\n"
+
+        return frame
+    
+class PostProcessDetection(PostProcess):
+    def __init__(self, flow):
+        super().__init__(flow)
+
+    def __call__(self, img, results):
+        """
+        Post process function for detection
+        Args:
+            img: Input frame
+            results: output of inference
+        """
+        for i, r in enumerate(results):
+            r = np.squeeze(r)
+            if r.ndim == 1:
+                r = np.expand_dims(r, 1)
+            results[i] = r
+
+        if self.model.shuffle_indices:
+            results_reordered = []
+            for i in self.model.shuffle_indices:
+                results_reordered.append(results[i])
+            results = results_reordered
+
+        if results[-1].ndim < 2:
+            results = results[:-1]
+
+        bbox = np.concatenate(results, axis=-1)
+
+        if self.model.formatter:
+            if self.model.ignore_index == None:
+                bbox_copy = copy.deepcopy(bbox)
+            else:
+                bbox_copy = copy.deepcopy(np.delete(bbox, self.model.ignore_index, 1))
+            bbox[..., self.model.formatter["dst_indices"]] = bbox_copy[
+                ..., self.model.formatter["src_indices"]
+            ]
+
+        if not self.model.normalized_detections:
+            bbox[..., (0, 2)] /= self.model.resize[0]
+            bbox[..., (1, 3)] /= self.model.resize[1]
+
+        for b in bbox:
+            if b[5] > self.model.viz_threshold:
+                if type(self.model.label_offset) == dict:
+                    class_name = self.model.classnames[self.model.label_offset[int(b[4])]]
+                else:
+                    class_name = self.model.classnames[self.model.label_offset + int(b[4])]
+                img = self.overlay_bounding_box(img, b, class_name)
+
+        if self.debug:
+            self.debug.log(self.debug_str)
+            self.debug_str = ""
+
+        return img
+
+    def overlay_bounding_box(self, frame, box, class_name):
+        """
+        draw bounding box at given co-ordinates.
+
+        Args:
+            frame (numpy array): Input image where the overlay should be drawn
+            bbox : Bounding box co-ordinates in format [X1 Y1 X2 Y2]
+            class_name : Name of the class to overlay
+        """
+        box = [
+            int(box[0] * frame.shape[1]),
+            int(box[1] * frame.shape[0]),
+            int(box[2] * frame.shape[1]),
+            int(box[3] * frame.shape[0]),
+        ]
+        box_color = (20, 220, 20)
+        text_color = (0, 0, 0)
+        cv2.rectangle(frame, (box[0], box[1]), (box[2], box[3]), box_color, 2)
+        cv2.rectangle(
+            frame,
+            (int((box[2] + box[0]) / 2) - 5, int((box[3] + box[1]) / 2) + 5),
+            (int((box[2] + box[0]) / 2) + 160, int((box[3] + box[1]) / 2) - 15),
+            box_color,
+            -1,
+        )
+        cv2.putText(
+            frame,
+            class_name,
+            (int((box[2] + box[0]) / 2), int((box[3] + box[1]) / 2)),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.5,
+            text_color,
+        )
+
+        if self.debug:
+            self.debug_str += class_name
+            self.debug_str += str(box) + "\n"
+
+        return frame
 
 class PostProcessSegmentation(PostProcess):
     def __call__(self, img, results):

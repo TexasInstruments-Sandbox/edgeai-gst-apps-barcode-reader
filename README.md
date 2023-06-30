@@ -1,6 +1,10 @@
 # Edge AI GStreamer Apps
 > Repository to host GStreamer based Edge AI applications for TI devices
 
+## Wifi add
+
+See the [wifi-attach README](./doc/wifi-README.md) to see to enable a web-based server for a proof-of-concept wifi demo with CC33x
+
 ## Edge AI Barcode Imager
 
 Barcodes are crucial in inventory management, asset tracking, ticketing, and information sharing. 1-D and 2-D barcodes condense information into a visually coded form. 1-D codes can be scanned with lasers, but 2-D codes, which can encode much more information and include error-correction of damaged codes, require imaging with cameras.
@@ -30,6 +34,7 @@ Run the setup script below within this repository *on the EVM*. This requires a 
 ./setup_barcode_demo.sh
 ```
 *  If the network fails, clone the zbar repository and download the barcode-modelartifacts on a PC, and transfer to the SD card manually, then rerun the setup script.
+*  Several additional python packages are needed for the webserver. If the EVM is behind a proxy, enter that information into the PROXY_INFO variable in the script.
 
 This will download several tools to the EVM. 
 1. The script ([setup_zbar.sh](./scripts/setup_zbar.sh)) will download, compile, and install the "zbar" open source library for barcode decoding. Compiling zbar will take several minutes.  
@@ -47,8 +52,10 @@ For C++:
 
 For Python3:
 ```
+unset http_proxy HTTP_PROXY
 python3 ./apps_python/app_edgeai.py ./configs/barcode-reader.yaml
 ```
+- For the version of the demo with networking, it is necessary for the http_proxy variables to be unset. 
 
 On the AM62A starter kit EVM, the barcode detection model uses yolox-nano architecture and runs at >100 fps. However, performance will slow down for more barcodes since each must be decoded individually, adding linear overhead. The fps for this application is likely to operate in the 15-20 fps range for 2+ barcodes in the field of view. This application can work on multiple types of barcodes, like QR codes and EAN-8.
 

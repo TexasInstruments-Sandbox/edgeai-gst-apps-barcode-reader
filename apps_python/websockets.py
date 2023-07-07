@@ -7,7 +7,7 @@ import time
 
 logging.basicConfig(level=logging.DEBUG)
 
-
+PORT=5001
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -53,7 +53,7 @@ def setup_client_socket():
     def disconnect(): print('local disconnect')
 
     print('connect to local server...')
-    client_socket.connect('http://localhost:5001')
+    client_socket.connect('http://localhost:'+str(PORT))
     print('connect attempted')
     return client_socket
 
@@ -66,7 +66,7 @@ def setup_client_socket():
     
 def launch_server():
     print('launching...')
-    socketio.run(app, host='0.0.0.0', port=5001, allow_unsafe_werkzeug=True)
+    socketio.run(app, host='0.0.0.0', port=PORT, allow_unsafe_werkzeug=True)
 
 def launch_server_process():
     p = Process(target=launch_server, args=())

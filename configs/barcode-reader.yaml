@@ -2,7 +2,7 @@ title: "Object Detection"
 log_level: 2
 inputs:
     input0:
-        source: /dev/video2
+        source: /dev/video-rpi-cam0
         format: rggb10
         width: 1640
         height: 1232
@@ -22,19 +22,19 @@ inputs:
         framerate: 1
         loop: True
     input4:
-        source: /dev/video2
+        source: /dev/video-rpi-cam0
         format: rggb
         width: 1920
         height: 1080
         framerate: 30
     input5:
-        source: /dev/video2
+        source: /dev/video-usb-cam0
         format: jpeg
         width: 1920
         height: 1080
         framerate: 15 
     input6:
-        source: /dev/video2
+        source: /dev/video-usb-cam0
         format: jpeg
         width: 1280
         height: 720

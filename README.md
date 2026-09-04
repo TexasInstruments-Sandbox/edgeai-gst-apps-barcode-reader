@@ -52,6 +52,8 @@ For Python3:
 python3 ./apps_python/app_edgeai.py ./configs/barcode-reader.yaml
 ```
 
+This will default to a USB-camera source and HDMI display output. 
+
 On the AM62A starter kit EVM, the barcode detection model uses yolox-nano architecture and runs at >100 fps. However, performance will slow down for more barcodes since each must be decoded individually, adding linear overhead. The fps for this application is likely to operate in the 15-20 fps range for 2+ barcodes in the field of view. This application can work on multiple types of barcodes, like QR codes and EAN-8.
 
 There is [significant opportunity for improving](#room-for-improvement) the performance with more multiprocessing on the Arm CPU cores and by developing a more specific, optimized implementation of 1-D or 2-D barcode decoding.
@@ -60,17 +62,25 @@ There is [significant opportunity for improving](#room-for-improvement) the perf
 
 This application will not function correctly for CPP, only python in present state. 
 
+#### Edge AI DL inferer patch
 A local Python depedency requires an edit to the edgeai_dl_inferer.py script at /usr/lib/python3.12/site-packages/edgeai_dl_inferer.py. At line 168 prior to creating the onnxruntime InferenceSession, session options must be modified like so to avoid onnx-internal optimizations for this barcode model. 
 ```python3 
 sess_options.graph_optimization_level = _onnxruntime.GraphOptimizationLevel.ORT_DISABLE_ALL
 ```
+The patch can also be applied directly in the 11.1 SDK like so: 
+```bash
+patch -p0 < patches/0001-edgeai-dl-inferer-disable-onnx-graphoptimization.patch
+```
 
+If this is not patched, the model will fail to load.
+
+#### Recompiling for 11.1 SDK
 The model was compiled with [edgeai-tidlrunner](https://github.com/TexasInstruments/edgeai-tidlrunner) using the r11.1 branch to compile the model with local tidlrunner-files
 ```bash
 tidlrunner-cli compile --target_device AM62A --config_path ./data/models/vision/detection/coco/edgeai-mmdet/barcode-demo/yolox-nano-barcode-detection_model_config.yaml --model_surgery 0
 ```
 
-Some modifications were necessary to align the resulting model's param.yaml (which holds model pre/post processing parameters for application code) to what edgeai-gst-apps and edgeai-dl-inferer expect. 
+Some modifications were necessary to align the resulting model's param.yaml (which holds model pre/post processing parameters for application code) to what edgeai-gst-apps and edgeai-dl-inferer expect. This is relevant if the model is recompiled with edgeai-tidlrunner 
 
 ### How It's Made
 

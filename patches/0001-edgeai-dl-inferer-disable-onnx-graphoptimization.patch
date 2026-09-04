@@ -1,0 +1,10 @@
+--- /usr/lib/python3.12/site-packages/edgeai_dl_inferer.py	2018-03-09 06:34:56.000000000 -0600
++++ /usr/lib/python3.12/site-packages/edgeai_dl_inferer.py	2026-09-04 10:15:52.211212745 -0500
+@@ -165,6 +165,7 @@
+                     "core_number": core_number,
+                 }
+                 sess_options = _onnxruntime.SessionOptions()
++                sess_options.graph_optimization_level = _onnxruntime.GraphOptimizationLevel.ORT_DISABLE_ALL
+                 sess_options.log_severity_level=3
+                 ep_list = ["TIDLExecutionProvider", "CPUExecutionProvider"]
+                 self.interpreter = _onnxruntime.InferenceSession(

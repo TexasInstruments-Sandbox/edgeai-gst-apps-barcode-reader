@@ -240,12 +240,12 @@ class PostProcessDetection(PostProcess):
                 else:
                     class_name_idx = self.model.label_offset + int(b[4])
 
-                if class_name_idx in self.model.classnames:
-                    class_name = self.model.classnames[class_name_idx]
+                if class_name_idx in self.model.dataset_info:
+                    class_name = self.model.dataset_info[class_name_idx].supercategory
                 else:
                     class_name = "UNDEFINED"
 
-                img = self.overlay_bounding_box(img, b, class_name)
+                img = self.overlay_bounding_box(img_copy, b, class_name)
 
                 extra_pixels = 20
                 box = [
@@ -276,9 +276,12 @@ class PostProcessDetection(PostProcess):
         return img
     
     def scan_codes(self, img):
-
+        #print('scanning codes')
         h,w,c = img.shape
-        if h<=0 or w<=0: return ""
+        if h<=0 or w<=0: 
+          print("Code detection region too small")
+          return "could not read"
+        
         if c==3:
             img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
         zbar_img = zbar.Image(w,h,'Y800', img.tobytes())

@@ -1,0 +1,13 @@
+inFileFormat    = 1
+numFrames   = 12
+postProcType   = 0
+postProcDataId   = 0
+quantRangeUpdateFactor   = -1.000000
+inData   = /home/reese/1-edgeai/1-ti-tools/4-tidlrunner/edgeai-tidlrunner/work_dirs/compile/AM62A/8bits/od-8209_onnxrt_edgeai-mmdet_barcode-demo_yolox-nano-barcode-detection_onnx/artifacts/tempDir/subgraph_0_calib_raw_data.bin
+outData   = "/home/reese/1-edgeai/1-ti-tools/4-tidlrunner/edgeai-tidlrunner/work_dirs/compile/AM62A/8bits/od-8209_onnxrt_edgeai-mmdet_barcode-demo_yolox-nano-barcode-detection_onnx/artifacts/tempDir/subgraph_0_tidl_io__stats_tool_out.bin"
+netBinFile     = /home/reese/1-edgeai/1-ti-tools/4-tidlrunner/edgeai-tidlrunner/work_dirs/compile/AM62A/8bits/od-8209_onnxrt_edgeai-mmdet_barcode-demo_yolox-nano-barcode-detection_onnx/artifacts/tempDir/subgraph_0_tidl_net.bin
+ioConfigFile        = /home/reese/1-edgeai/1-ti-tools/4-tidlrunner/edgeai-tidlrunner/work_dirs/compile/AM62A/8bits/od-8209_onnxrt_edgeai-mmdet_barcode-demo_yolox-nano-barcode-detection_onnx/artifacts/tempDir/subgraph_0_tidl_io_1.bin
+writeTraceLevel        = 0
+debugTraceLevel        = 0
+traceDumpBaseName        = "/home/reese/1-edgeai/1-ti-tools/4-tidlrunner/edgeai-tidlrunner/work_dirs/compile/AM62A/8bits/od-8209_onnxrt_edgeai-mmdet_barcode-demo_yolox-nano-barcode-detection_onnx/artifacts/tempDir/subgraph_0_tidl_io_
+flowCtrl               = 35

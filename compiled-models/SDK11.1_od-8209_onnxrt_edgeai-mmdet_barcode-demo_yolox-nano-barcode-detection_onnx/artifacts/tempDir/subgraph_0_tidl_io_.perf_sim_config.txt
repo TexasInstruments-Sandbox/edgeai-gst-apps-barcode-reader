@@ -1,0 +1,17 @@
+# Size of L2 Aux SRAM  Memory in KB which can be used by TIDL, Recommended value is
+# 224KB considering that 32KB of L2 is used for other purpose.
+L2MEMSIZE_KB           = 224
+# Size of L2 main SRAM Memory in KB which can be used by TIDL
+MSMCSIZE_KB            = 1024
+#ID for a Device, TDA4VMID = 0, TIDL_TDA4AEP = 1,  TIDL_TDA4AM = 2, TIDL_TDA4AMPlus = 3, TIDL_AM62A = 4
+DEVICE_NAME            = 4
+ENABLE_PERSIT_WT_ALLOC = 1
+DDRFREQ_MHZ            = 3200
+MATPANELSIZE           = 32
+
+
+FILENAME_NET     = /home/reese/1-edgeai/1-ti-tools/4-tidlrunner/edgeai-tidlrunner/work_dirs/compile/AM62A/8bits/od-8209_onnxrt_edgeai-mmdet_barcode-demo_yolox-nano-barcode-detection_onnx/artifacts/tempDir/subgraph_0_tidl_net.bin
+FILEFORMAT_NET     = -1
+DEVICE_NAME     = 260
+PACKETIZE_MODE     = 0
+OUTPUT_DIR     = /home/reese/1-edgeai/1-ti-tools/4-tidlrunner/edgeai-tidlrunner/work_dirs/compile/AM62A/8bits/od-8209_onnxrt_edgeai-mmdet_barcode-demo_yolox-nano-barcode-detection_onnx/artifacts/tempDir/subgraph_0_tidl_net.bin

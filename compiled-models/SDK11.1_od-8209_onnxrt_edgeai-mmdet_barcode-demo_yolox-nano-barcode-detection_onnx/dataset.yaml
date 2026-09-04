@@ -1,0 +1,15 @@
+info:
+  description: COCO 2017 Dataset
+  url: http://cocodataset.org
+  version: '1.0'
+  year: 2017
+  contributor: COCO Consortium
+  date_created: 2017/09/01
+categories:
+- supercategory: barcode
+  id: 0
+  name: barcode
+color_map:
+- - 0
+  - 0
+  - 31

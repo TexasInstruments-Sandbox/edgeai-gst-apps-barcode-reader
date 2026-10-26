@@ -16,25 +16,37 @@ fi
 cd zbar
 
 echo "Build zbar"
+USE_OLD_BUILD_STEPS=0 #zbar from branch 0.23 or older
 #https://github.com/mchehab/zbar/blob/master/INSTALL.md
-autoreconf -vfi 
-./configure 
-make  
+if [[ "$USE_OLD_BUILD_STEPS" -eq 1 ]]; then 
+    autoreconf -vfi 
+    ./configure 
+    make  
 
-echo "install zbar"
-make install >> $LOGFILE
+    echo "install zbar"
+    make install >> $LOGFILE
 
-cd python
-python3 setup.py install >> $LOGFILE
+    cd python
+    python3 setup.py install >> $LOGFILE
 
-echo "Copy installed zbar to /usr/lib"
-# copy to /usr/lib from /usr/local/lib. Otherwise, paths need to be added for the linker/LD to find.
-cp /usr/local/lib/libzbar.so.0.3.0 /usr/lib
-cp /usr/local/lib/libzbar.la /usr/lib
-cp /usr/local/lib/libzbar.a /usr/lib
-cp /usr/local/lib/pkgconfig/zbar.pc /usr/lib/pkgconfig/zbar.pc
-cp /usr/local/lib/python3.12/site-packages/zbar.* /usr/lib/python3.12/site-packages/
+    echo "Copy installed zbar to /usr/lib"
+    # copy to /usr/lib from /usr/local/lib. Otherwise, paths need to be added for the linker/LD to find.
+    cp /usr/local/lib/libzbar.so.0.3.0 /usr/lib
+    cp /usr/local/lib/libzbar.la /usr/lib
+    cp /usr/local/lib/libzbar.a /usr/lib
+    cp /usr/local/lib/pkgconfig/zbar.pc /usr/lib/pkgconfig/zbar.pc
+    cp /usr/local/lib/python3.12/site-packages/zbar.* /usr/lib/python3.12/site-packages/
 
-ln -sf /usr/lib/libzbar.so.0.3.0 /usr/lib/libzbar.so.0
+    ln -sf /usr/lib/libzbar.so.0.3.0 /usr/lib/libzbar.so.0
+
+else
+    ##updated build for newer zbar library versions
+    meson setup build -Dpython=python3
+    meson compile -C build
+    meson install -C build
+fi 
+
 
 ldconfig
+
+

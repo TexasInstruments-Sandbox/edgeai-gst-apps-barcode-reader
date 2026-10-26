@@ -7,20 +7,11 @@ if [ "$?" -ne "0" ]; then
 fi
 
 
-echo "Setup Model"
-./scripts/setup_model.sh
-if [ "$?" -ne "0" ]; then
-    exit_setup
-fi
-
-
 ldconfig
 
-echo "Build C++ apps"
-./scripts/compile_cpp_apps.sh $*
-if [ "$?" -ne "0" ]; then
-    exit_setup
-fi
+echo "Skipping C++ rebuild; this has not been verified in 11.1 SDK"
+#./scripts/compile_cpp_apps.sh $*
+#if [ "$?" -ne "0" ]; then
+#    exit_setup
+#fi
 
-ldconfig 
-sync

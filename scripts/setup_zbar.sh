@@ -29,15 +29,6 @@ if [[ "$USE_OLD_BUILD_STEPS" -eq 1 ]]; then
     cd python
     python3 setup.py install >> $LOGFILE
 
-    echo "Copy installed zbar to /usr/lib"
-    # copy to /usr/lib from /usr/local/lib. Otherwise, paths need to be added for the linker/LD to find.
-    cp /usr/local/lib/libzbar.so.0.3.0 /usr/lib
-    cp /usr/local/lib/libzbar.la /usr/lib
-    cp /usr/local/lib/libzbar.a /usr/lib
-    cp /usr/local/lib/pkgconfig/zbar.pc /usr/lib/pkgconfig/zbar.pc
-    cp /usr/local/lib/python3.12/site-packages/zbar.* /usr/lib/python3.12/site-packages/
-
-    ln -sf /usr/lib/libzbar.so.0.3.0 /usr/lib/libzbar.so.0
 
 else
     ##updated build for newer zbar library versions
@@ -46,6 +37,14 @@ else
     meson install -C build
 fi 
 
+
+echo "Copy installed zbar from /usr/local/lib to /usr/lib"
+# copy to /usr/lib from /usr/local/lib. Otherwise, paths need to be added for the linker/LD to find.
+cp /usr/local/lib/libzbar.* /usr/lib
+cp /usr/local/lib/pkgconfig/zbar.pc /usr/lib/pkgconfig/zbar.pc
+cp /usr/local/lib/python3.12/site-packages/zbar.* /usr/lib/python3.12/site-packages/
+
+ln -sf /usr/lib/libzbar.so.0.3.0 /usr/lib/libzbar.so.0
 
 ldconfig
 
